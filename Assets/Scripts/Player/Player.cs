@@ -59,22 +59,35 @@ public class Player : MonoBehaviour
     {
         if(other.gameObject.TryGetComponent<Obstacle>(out Obstacle obstacle))
         {
-            boom.Initialize(
-                type, 
-                _renderer.material, 
-                transform.position, 
-                transform.localScale.x
-            );
-            
-            transform.position = new Vector3(0, 100, 0);
+            StartCoroutine(nameof(EndLive));
+        }
+    }
 
-            StopCoroutine(shoot);
-            isShooting = false;
+    private IEnumerator EndLive()
+    {
+        StopCoroutine(shoot);
+        isShooting = false;
+        
+        boom.Initialize(
+            type, 
+            _renderer.material, 
+            transform.position, 
+            transform.localScale.x
+        );
+        
+        yield return new WaitForSeconds(0.1f);
 
-            if(!Resource.current.HasResource())
-            {
-                Result.current.Lose();
-            }
+        transform.position = new Vector3(0, 100, 0);
+
+        yield return new WaitForSeconds(0.1f);
+
+        gameObject.SetActive(false);
+
+        if(!Resource.current.HasResource())
+        {
+            Result.current.Lose();
         }
     }
 }
+
+
